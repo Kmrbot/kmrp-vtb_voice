@@ -9,7 +9,6 @@ from .painter.vtb_voice_list_painter import VtbVoiceListPainter
 
 get_vtb_voice_list = on_command(
     "vtb_help",
-    rule=to_me(),
     priority=5,
 )
 get_vtb_voice_list.__doc__ = """vtb_help"""
