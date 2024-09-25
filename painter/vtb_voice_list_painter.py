@@ -138,13 +138,18 @@ class VtbVoiceListPainter:
         vtb_voice_name_voice_exist = {}    # name -> count 用来过滤掉某些群组下某个name下无任何语音可以展示的情况
         for each_data in vtb_voice_data["data"]:
             for each_voice in each_data["voices"]:
-                if (len(each_voice.get("white_list", [])) == 0) or \
-                    len(list(filter(
+                if len(each_voice.get("black_list", [])) != 0 and len(list(filter(
                         lambda x: (x.get("type", "") == event_type and x.get("type_id", 0) == type_id),
-                        each_voice["white_list"]))):
-                    # 无白名单 或 当前在白名单范围内
-                    voice_count += 1
-                    vtb_voice_name_voice_exist[str(each_data["vtb_name"])] = True
+                        each_voice["black_list"]))) != 0:
+                    # 在黑名单内
+                    continue
+                if len(each_voice.get("white_list", [])) != 0 and len(list(filter(
+                        lambda x: (x.get("type", "") == event_type and x.get("type_id", 0) == type_id),
+                        each_voice["white_list"]))) == 0:
+                    # 不在白名单内
+                    continue
+                voice_count += 1
+                vtb_voice_name_voice_exist[str(each_data["vtb_name"])] = True
         cur_vtb_name = None  # 切换了vtb_name则新建一个标题
         # index_total表示一共有多少行 根据行数来决定什么时候切换列
         # vtb_count个标题（vtb名），以及vtb_count*0.3个标题额外内容（vtb名称集合）
@@ -176,6 +181,10 @@ class VtbVoiceListPainter:
                 # print(f"paint_count{paint_count} cur_vtb_name{cur_vtb_name}")
                 for each_voice in each_data["voices"]:
                     voice_name_color = Color.BLACK
+                    if len(each_voice.get("black_list", [])) != 0 and len(list(filter(
+                            lambda x: (x.get("type", "") == event_type and x.get("type_id", 0) == type_id),
+                            each_voice["black_list"]))) != 0:
+                        continue
                     if len(each_voice.get("white_list", [])) != 0:
                         # 带白名单的则换一种颜色来打印
                         if len(list(filter(

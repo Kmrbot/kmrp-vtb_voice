@@ -117,6 +117,12 @@ async def _(
                         each_voice["white_list"]))) == 0:
                     # 有白名单但是不符合白名单规则
                     continue
+            if each_voice.get("black_list") is not None:
+                if len(list(filter(
+                        lambda x: (x.get("type", "") == msg_type and x.get("type_id", 0) == msg_type_id),
+                        each_voice["black_list"]))) != 0:
+                    # 有黑名单且符合规则
+                    continue
             voices_list.append(each_voice)
     if len(voices_list) == 0:
         await query_vtb_voice.finish(ProtocolAdapter.MS.reply(event) +
